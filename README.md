@@ -43,7 +43,7 @@ package main
 import (
     "fmt"
     "log"
-    "github.com/yourusername/sirius"
+    "github.com/jgolang/sirius"
 )
 
 func main() {
