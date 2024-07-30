@@ -3,7 +3,7 @@ package sirius
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"strconv"
 )
@@ -22,7 +22,7 @@ func Open(name string) (*SJson, error) {
 	}
 	defer jsonFile.Close()
 
-	buffer, err := ioutil.ReadAll(jsonFile)
+	buffer, err := io.ReadAll(jsonFile)
 	if err != nil {
 		return nil, err
 	}
