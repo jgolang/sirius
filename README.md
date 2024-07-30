@@ -9,7 +9,7 @@ The `sirius` package provides a set of functions for working with JSON files in 
 To install the `sirius` package, use the following command:
 
 ```bash
-go get github.com/yourusername/sirius
+go get github.com/jgolang/sirius
 ```
 
 ## Usage
