@@ -68,6 +68,8 @@ func main() {
 
 ## Functions
 
+Every getter returns its zero value (`nil`, `""`, `0`, `false`) when the key is not found. A key is not found when any of its segments is missing: if `databases.staging` does not exist, `databases.staging.password` is not found, even when `databases.password` exists.
+
 ### `Open`
 
 ```go

@@ -59,3 +59,68 @@ func TestGetIntReadsValidIndexKey(t *testing.T) {
 		t.Errorf("GetInt(list[0].v) = %d, want 1", got)
 	}
 }
+
+func TestGetStringReturnsEmptyForMissingMiddleSegment(t *testing.T) {
+	document := openTestJSON(t, `{"databases":{"password":"PARENT","prod":{"password":"p"}},"a":"x"}`)
+	keys := []string{"databases.staging.password", "nothere.databases.prod.password", "a.b"}
+
+	for _, key := range keys {
+		t.Run(key, func(t *testing.T) {
+			got := document.GetString(key)
+
+			if got != "" {
+				t.Errorf("GetString(%q) = %q, want empty", key, got)
+			}
+		})
+	}
+}
+
+func TestGetBoolReturnsFalseForMissingMiddleSegment(t *testing.T) {
+	document := openTestJSON(t, `{"auth":{"require_mfa":true,"admin":{}}}`)
+
+	got := document.GetBool("auth.missing.require_mfa")
+
+	if got {
+		t.Error("GetBool(auth.missing.require_mfa) = true, want false")
+	}
+}
+
+func TestGetReturnsNilForMissingMiddleSegment(t *testing.T) {
+	document := openTestJSON(t, `{"databases":{"password":"PARENT","prod":{"password":"p"}}}`)
+
+	got := document.Get("databases.staging.password")
+
+	if got != nil {
+		t.Errorf("Get(databases.staging.password) = %v, want nil", got)
+	}
+}
+
+func TestGetStringResolvesPathBesideParentValue(t *testing.T) {
+	document := openTestJSON(t, `{"databases":{"password":"PARENT","prod":{"password":"p"}}}`)
+
+	got := document.GetString("databases.prod.password")
+
+	if got != "p" {
+		t.Errorf("GetString(databases.prod.password) = %q, want p", got)
+	}
+}
+
+func TestGetBoolResolvesExistingPath(t *testing.T) {
+	document := openTestJSON(t, `{"auth":{"require_mfa":true,"admin":{}}}`)
+
+	got := document.GetBool("auth.require_mfa")
+
+	if !got {
+		t.Error("GetBool(auth.require_mfa) = false, want true")
+	}
+}
+
+func TestGetReturnsObjectForExistingPath(t *testing.T) {
+	document := openTestJSON(t, `{"auth":{"require_mfa":true,"admin":{}}}`)
+
+	got, ok := document.Get("auth.admin").(jsonNode)
+
+	if !ok || len(got) != 0 {
+		t.Errorf("Get(auth.admin) = %v, want an empty object", got)
+	}
+}
