@@ -12,9 +12,15 @@ func getJSONPathValue(path string, node jsonNode) interface{} {
 	var currentNode = node
 	var value interface{}
 	keys := strings.Split(path, ".")
-	for _, key := range keys {
+	lastIndex := len(keys) - 1
+	for position, key := range keys {
 		tempNode := getNodeValue(key, -1, currentNode)
 		if tempNode == nil {
+			// Only the last segment may be a scalar or a missing key; a
+			// missing middle segment means the whole path is not found.
+			if position != lastIndex {
+				return nil
+			}
 			value = currentNode[key]
 			continue
 		}
