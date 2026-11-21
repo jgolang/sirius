@@ -42,10 +42,7 @@ func getNode(v interface{}, i int) jsonNode {
 		configNode := jsonNode(node)
 		return configNode
 	case []interface{}:
-		if len(node) <= i {
-			return nil
-		}
-		if i == -1 {
+		if i < 0 || len(node) <= i {
 			return nil
 		}
 		configNode := jsonNode(getNode(node[i], 0))
@@ -58,7 +55,8 @@ func getNode(v interface{}, i int) jsonNode {
 func formatKey(key string) (string, int, error) {
 	i := strings.Index(key, "[")
 	k := strings.Index(key, "]")
-	if i == -1 {
+	// A "]" must follow the "[" to delimit the index.
+	if i == -1 || k < i {
 		return "", 0, fmt.Errorf("Not format key for index")
 	}
 	formatKey := key[:i]
